@@ -1,33 +1,99 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Multiple Promises Resolution Tracker</title>
 
-<html>
-  <head>
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
-      crossorigin="anonymous"
-    />
-  </head>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6fb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-  <body>
-    <!-- the entire body must be written by student -->
-    <table class="table table-striped table-hover table-bordered">
-      <thead>
-        <tr>
-          <th>Promise Name</th>
-          <th>Time taken (s)</th>
-        </tr>
-      </thead>
-      <tbody id="output"></tbody>
-    </table>
+table {
+  border-collapse: collapse;
+  width: 400px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-    <script type="text/javascript" src="./script.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background: #1e90ff;
+  color: white;
+}
+
+.loading {
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<table>
+  <thead>
+    <tr>
+      <th>Promise</th>
+      <th>Time Taken (Seconds)</th>
+    </tr>
+  </thead>
+  <tbody id="output">
+    <tr id="loading-row">
+      <td colspan="2" class="loading">Loading...</td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+function createPromise() {
+  return new Promise((resolve) => {
+    const time = Math.random() * 2 + 1; // between 1 and 3 seconds
+    setTimeout(() => {
+      resolve(time);
+    }, time * 1000);
+  });
+}
+
+const startTime = performance.now();
+
+const p1 = createPromise();
+const p2 = createPromise();
+const p3 = createPromise();
+
+Promise.all([p1, p2, p3]).then((results) => {
+  const endTime = performance.now();
+  const totalTime = ((endTime - startTime) / 1000).toFixed(3);
+
+  const tbody = document.getElementById("output");
+  document.getElementById("loading-row").remove();
+
+  results.forEach((time, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>Promise ${index + 1}</td>
+      <td>${time.toFixed(3)}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  const totalRow = document.createElement("tr");
+  totalRow.innerHTML = `
+    <td><b>Total</b></td>
+    <td><b>${totalTime}</b></td>
+  `;
+  tbody.appendChild(totalRow);
+});
+</script>
+
+</body>
 </html>
