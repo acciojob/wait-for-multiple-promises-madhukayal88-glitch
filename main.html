@@ -5,39 +5,27 @@
 <title>Multiple Promises Resolution Tracker</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6fb;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+  body {
+    font-family: Arial, sans-serif;
+    padding: 40px;
+  }
 
-table {
-  border-collapse: collapse;
-  width: 400px;
-  background: white;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
+  table {
+    border-collapse: collapse;
+    width: 400px;
+  }
 
-th, td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
+  th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
 
-th {
-  background: #1e90ff;
-  color: white;
-}
-
-.loading {
-  font-weight: bold;
-}
+  th {
+    background: #f2f2f2;
+  }
 </style>
 </head>
-
 <body>
 
 <table>
@@ -48,8 +36,8 @@ th {
     </tr>
   </thead>
   <tbody id="output">
-    <tr id="loading-row">
-      <td colspan="2" class="loading">Loading...</td>
+    <tr id="loading">
+      <td colspan="2">Loading...</td>
     </tr>
   </tbody>
 </table>
@@ -57,25 +45,20 @@ th {
 <script>
 function createPromise() {
   return new Promise((resolve) => {
-    const time = Math.random() * 2 + 1; // between 1 and 3 seconds
+    const time = Math.random() * 2 + 1; // 1 to 3 seconds
     setTimeout(() => {
       resolve(time);
     }, time * 1000);
   });
 }
 
-const startTime = performance.now();
-
 const p1 = createPromise();
 const p2 = createPromise();
 const p3 = createPromise();
 
 Promise.all([p1, p2, p3]).then((results) => {
-  const endTime = performance.now();
-  const totalTime = ((endTime - startTime) / 1000).toFixed(3);
-
   const tbody = document.getElementById("output");
-  document.getElementById("loading-row").remove();
+  document.getElementById("loading").remove();
 
   results.forEach((time, index) => {
     const row = document.createElement("tr");
@@ -86,10 +69,12 @@ Promise.all([p1, p2, p3]).then((results) => {
     tbody.appendChild(row);
   });
 
+  const maxTime = Math.max(...results);
+
   const totalRow = document.createElement("tr");
   totalRow.innerHTML = `
-    <td><b>Total</b></td>
-    <td><b>${totalTime}</b></td>
+    <td>Total</td>
+    <td>${maxTime.toFixed(3)}</td>
   `;
   tbody.appendChild(totalRow);
 });
